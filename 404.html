@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halaman Tidak Ditemukan - EclipesVerse</title>
+    <meta name="description" content="Halaman yang Anda cari tidak ditemukan di EclipesVerse." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== 404 PAGE STYLE ===== */
+        .error-container {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .error-content {
+            text-align: center;
+            max-width: 600px;
+        }
+        .error-content .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            line-height: 1;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -8px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        .error-content .error-icon {
+            font-size: 72px;
+            margin: 8px 0;
+            display: block;
+            opacity: 0.5;
+        }
+        .error-content h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 8px 0;
+            color: var(--text-primary);
+        }
+        .error-content p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+        .error-content .error-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .error-content .error-actions .btn-primary {
+            padding: 12px 32px;
+            border-radius: 25px;
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition);
+            box-shadow: 0 4px 25px rgba(124,58,237,0.3);
+        }
+        .error-content .error-actions .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(124,58,237,0.4);
+        }
+        .error-content .error-actions .btn-secondary {
+            padding: 12px 32px;
+            border-radius: 25px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition);
+        }
+        .error-content .error-actions .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .error-suggestions {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+        .error-suggestions .suggestion-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .error-suggestions .suggestion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+        }
+        .error-suggestions .suggestion-grid a {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            text-align: center;
+            transition: all var(--transition);
+        }
+        .error-suggestions .suggestion-grid a:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .error-search {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .error-search input {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all var(--transition);
+        }
+        .error-search input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+        }
+        .error-search input::placeholder {
+            color: var(--text-muted);
+        }
+        .error-search button {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+        .error-search button:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .error-content .error-code {
+                font-size: 80px;
+                letter-spacing: -4px;
+            }
+            .error-content h1 {
+                font-size: 22px;
+            }
+            .error-content p {
+                font-size: 14px;
+            }
+            .error-content .error-actions .btn-primary,
+            .error-content .error-actions .btn-secondary {
+                padding: 10px 24px;
+                font-size: 14px;
+            }
+            .error-suggestions .suggestion-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .error-search {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-meteor"></i> Eclipes<span>Verse</span>
+            </a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-daftaranime.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mydaftaranime.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== 404 CONTENT ===== -->
+    <main class="container error-container">
+        <div class="error-content">
+            <span class="error-icon">🔍</span>
+            <div class="error-code">404</div>
+            <h1>Halaman Tidak Ditemukan</h1>
+            <p>
+                Maaf, halaman yang Anda cari tidak dapat ditemukan.<br />
+                Mungkin halaman telah dihapus, dipindahkan, atau URL-nya salah.
+            </p>
+
+            <div class="error-actions">
+                <a href="index.html" class="btn-primary">
+                    <i class="fas fa-home"></i> Kembali ke Beranda
+                </a>
+                <a href="javascript:history.back()" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+            </div>
+
+            <div class="error-search">
+                <input type="text" id="errorSearchInput" placeholder="Cari anime..." />
+                <button onclick="searchError()"><i class="fas fa-search"></i> Cari</button>
+            </div>
+
+            <div class="error-suggestions">
+                <div class="suggestion-title">✨ Populer di EclipesVerse</div>
+                <div class="suggestion-grid">
+                    <a href="index.html">Home</a>
+                    <a href="ongoing.html">Ongoing</a>
+                    <a href="daftaranime.html">Daftar Anime</a>
+                    <a href="genre-daftaranime.html">Genre</a>
+                    <a href="schedule.html">Jadwal</a>
+                    <a href="mydaftaranime.html">Daftar Saya</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-daftaranime.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mydaftaranime.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ===== SEARCH FUNCTION =====
+        function searchError() {
+            const query = document.getElementById('errorSearchInput').value.trim();
+            if (query) {
+                window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        document.getElementById('errorSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchError();
+        });
+
+        console.log('🚀 404 Page loaded');
+    </script>
+
+</body>
+</html>
