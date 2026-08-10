@@ -34,8 +34,9 @@ document.addEventListener('click', requestNotificationPermission, { once: true }
 // ============================================
 // API CONFIG - TANPA API KEY!
 // ============================================
-// 🔥 URL BACKEND (SUDAH SETTING UNTUK TERMUX)
-const API_BASE = 'http://localhost:5000/api/animekompi';
+// 🔥 IP TERMUX ANDA: 192.168.43.223
+// Ganti dengan IP baru jika berubah
+const API_BASE = 'http://192.168.43.223:5000/api/animekompi';
 
 console.log(`🔧 API_BASE: ${API_BASE}`);
 
