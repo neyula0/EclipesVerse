@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EclipesVerse - Streaming Anime Subtitle Indonesia</title>
+    <meta name="description" content="Streaming anime subtitle Indonesia gratis, tanpa iklan, update tercepat, HD quality." />
+    <meta name="robots" content="index, follow" />
+    <meta name="keywords" content="anime, streaming anime, subtitle indonesia, nonton anime, anime terbaru" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="EclipesVerse - Streaming Anime Subtitle Indonesia" />
+    <meta property="og:description" content="Streaming anime subtitle Indonesia gratis, tanpa iklan, update tercepat, HD quality." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://eclipesverse.com" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="EclipesVerse - Streaming Anime Subtitle Indonesia" />
+    <meta name="twitter:description" content="Streaming anime subtitle Indonesia gratis, tanpa iklan, update tercepat." />
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#7c3aed" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="EclipesVerse" />
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================
+           TAMBAHAN KHUSUS INDEX.HTML
+           ============================================ */
+
+        /* ---- TOMBOL "LIHAT SEMUA" ---- */
+        .section-header .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+        .section-header .btn-link:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateX(4px);
+            background: rgba(124,58,237,0.05);
+        }
+        .section-header .btn-link i {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        .section-header .btn-link:hover i {
+            transform: translateX(4px);
+        }
+
+        /* ---- FLOATING SCROLL TOP ---- */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+        .scroll-top-btn.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        .scroll-top-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(124,58,237,0.5);
+        }
+
+        /* ---- BADGE HOT & NEW ---- */
+        .badge-hot {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(239, 68, 68, 0.92);
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+        .badge-new {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(74, 222, 128, 0.92);
+            color: #000;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+
+        /* ---- LOADING SKELETON IMPROVED ---- */
+        .skeleton-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            aspect-ratio: 2/3;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .skeleton-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255,255,255,0.03) 50%,
+                transparent 100%
+            );
+            animation: shimmer 1.5s ease-in-out infinite;
+            transform: translateX(-100%);
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .section-header .btn-link {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+            .scroll-top-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 15px;
+                bottom: 16px;
+                right: 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .section-header .btn-link {
+                padding: 4px 12px;
+                font-size: 11px;
+                gap: 4px;
+            }
+            .section-header .btn-link i {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loadingScreen">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Eclipes<span>Verse</span></div>
+            <div class="loader-sub">Memuat anime...</div>
+        </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-meteor"></i> Eclipes<span>Verse</span>
+            </a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mylist.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-crown"></i> #1 Anime Streaming
+                </div>
+                <h1>Streaming Anime <br /><span>Subtitle Indonesia</span></h1>
+                <p>Gratis • Tanpa Iklan • Update Tercepat • HD Quality</p>
+                <div class="hero-buttons">
+                    <a href="ongoing.html" class="btn-primary">
+                        <i class="fas fa-play"></i> Mulai Nonton
+                    </a>
+                    <a href="daftaranime.html" class="btn-secondary">
+                        <i class="fas fa-list"></i> Lihat Semua
+                    </a>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="number">12,000+</div>
+                        <div class="label">Judul Anime</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <div class="number">Update Setiap Hari</div>
+                        <div class="label">Tercepat</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <div class="number">500K+</div>
+                        <div class="label">Pengguna Aktif</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="container">
+
+        <!-- ===== TRENDING ===== -->
+        <div class="slider-section">
+            <div class="section-header">
+                <h2><i class="fas fa-fire"></i> Trending Sekarang</h2>
+                <a href="trending.html" class="btn-link">
+                    Lihat Semua <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="slider-container" id="sliderContainer">
+                <div class="loading-skeleton" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;width:100%;">
+                    <div class="skeleton-card" style="aspect-ratio:16/9;"></div>
+                    <div class="skeleton-card" style="aspect-ratio:16/9;"></div>
+                    <div class="skeleton-card" style="aspect-ratio:16/9;"></div>
+                    <div class="skeleton-card" style="aspect-ratio:16/9;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FEATURED ===== -->
+        <div class="featured-card" id="featuredCard">
+            <div class="featured-poster">
+                <img id="featuredImage" src="https://via.placeholder.com/300x450/1a1730/555?text=Loading" alt="Featured" />
+            </div>
+            <div class="featured-info">
+                <span class="featured-badge"><i class="fas fa-star"></i> Featured</span>
+                <h3 id="featuredTitle">Memuat Anime...</h3>
+                <div class="featured-meta" id="featuredMeta">TV • Ongoing</div>
+                <div id="featuredRating"></div>
+                <div class="featured-desc" id="featuredDesc">Memuat deskripsi...</div>
+                <div class="featured-actions">
+                    <a href="#" class="watch-btn" id="featuredWatchBtn"><i class="fas fa-play"></i> Tonton Sekarang</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== POPULER ===== -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-fire"></i> Populer</h2>
+                <a href="populer.html" class="btn-link">
+                    Lihat Semua <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div id="populerGrid" class="anime-grid">
+                <div class="loading-skeleton">
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BARU DITAMBAHKAN ===== -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Baru Ditambahkan</h2>
+                <a href="daftaranime.html" class="btn-link">
+                    Lihat Semua <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div id="newGrid" class="anime-grid">
+                <div class="loading-skeleton">
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ONGOING ===== -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Ongoing</h2>
+                <a href="ongoing.html" class="btn-link">
+                    Lihat Semua <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div id="ongoingGrid" class="anime-grid">
+                <div class="loading-skeleton">
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== COMPLETED ===== -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-check-circle"></i> Completed</h2>
+                <a href="daftaranime.html?type=completed" class="btn-link">
+                    Lihat Semua <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div id="completedGrid" class="anime-grid">
+                <div class="loading-skeleton">
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-list.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mylist.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <!-- ===== FLOATING SCROLL TOP BUTTON ===== -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ============================================
+        // SCROLL TOP BUTTON
+        // ============================================
+        const scrollBtn = document.getElementById('scrollTopBtn');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 500) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================
+        // LOAD HOME DATA
+        // ============================================
+        const sliderContainer = document.getElementById('sliderContainer');
+        const ongoingGrid = document.getElementById('ongoingGrid');
+        const populerGrid = document.getElementById('populerGrid');
+        const completedGrid = document.getElementById('completedGrid');
+        const newGrid = document.getElementById('newGrid');
+
+        async function loadHomeData() {
+            try {
+                const data = await fetchAnimekompi('home');
+                const sliders = data?.sliders || [];
+                const trendingToday = data?.trending_today || [];
+                const latestUpdates = data?.latest_updates || [];
+
+                // Slider
+                renderSliders(sliderContainer, sliders);
+
+                // Featured
+                if (sliders.length > 0) {
+                    renderFeatured(sliders[0]);
+                } else if (trendingToday.length > 0) {
+                    renderFeatured(trendingToday[0]);
+                }
+
+                // Populer: sort by rating
+                const populerList = [...trendingToday]
+                    .sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0))
+                    .slice(0, 10);
+                renderAnimeGrid(populerGrid, populerList, 'populer');
+
+                // Baru Ditambahkan: urutkan dari yang terbaru
+                const newList = [...latestUpdates]
+                    .sort((a, b) => {
+                        const dateA = new Date(a.updated_at || a.released_at || 0);
+                        const dateB = new Date(b.updated_at || b.released_at || 0);
+                        return dateB - dateA;
+                    })
+                    .slice(0, 10);
+                renderAnimeGrid(newGrid, newList, '');
+
+                // Ongoing: filter status ongoing
+                const ongoingList = latestUpdates.filter(a => {
+                    const status = (a.status || a.status_or_episode || '').toLowerCase();
+                    return status.includes('ongoing') && !status.includes('completed');
+                }).slice(0, 10);
+                renderAnimeGrid(ongoingGrid, ongoingList, 'ongoing');
+
+                // Completed: filter status completed
+                const completedList = latestUpdates.filter(a => {
+                    const status = (a.status || a.status_or_episode || '').toLowerCase();
+                    return status.includes('completed') || status.includes('tamat');
+                }).slice(0, 10);
+                renderAnimeGrid(completedGrid, completedList, 'completed');
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showToast('Gagal memuat data home', 'fa-exclamation-circle');
+            }
+        }
+
+        // ===== HIDE LOADING SCREEN =====
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loading = document.getElementById('loadingScreen');
+                if (loading) loading.classList.add('hide');
+            }, 800);
+        });
+
+        loadHomeData();
+
+        console.log('🚀 EclipesVerse Home loaded');
+    </script>
+
+</body>
+</html>
