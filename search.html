@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pencarian - EclipesVerse</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        .hero { padding: 20px 0 8px; text-align: center; }
+        .hero h1 { font-size: 28px; font-weight: 700; }
+        .hero h1 span { background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 12px 0; flex-wrap: wrap; }
+        .breadcrumb a { color: var(--accent); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb .separator { color: var(--border-color); }
+        .list-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+        .list-header h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .list-header h2 i { color: var(--accent); }
+        .list-header .filter-info { color: var(--text-muted); font-size: 14px; }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-tabs::-webkit-scrollbar { height: 2px; }
+        .filter-tabs::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        .filter-tabs a {
+            padding: 8px 20px;
+            border-radius: 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-tabs a:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        .filter-tabs a.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+        }
+        .filter-tabs a i { font-size: 13px; }
+
+        .search-box-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            max-width: 600px;
+            position: relative;
+        }
+        .search-box-wrapper .search-icon-input {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .search-box-wrapper input {
+            flex: 1;
+            padding: 12px 18px 12px 44px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+            transition: all var(--transition);
+        }
+        .search-box-wrapper input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+        }
+        .search-box-wrapper input::placeholder { color: var(--text-muted); }
+        .search-box-wrapper button {
+            padding: 12px 28px;
+            border-radius: var(--radius-md);
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .search-box-wrapper button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .search-filters button {
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .search-filters button:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        .search-filters button.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .anime-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+        .back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; font-size: 13px; text-decoration: none; transition: all var(--transition); }
+        .back-btn:hover { border-color: var(--accent); color: var(--text-primary); transform: translateX(-4px); }
+        .loading-skeleton-search { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+        .skeleton-search-card { background: var(--bg-card); border-radius: var(--radius-md); aspect-ratio: 2/3; animation: shimmer 1.8s ease-in-out infinite; border: 1px solid var(--border-color); }
+        @keyframes shimmer { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-muted); }
+        .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+        footer { border-top: 1px solid var(--border-color); padding: 20px 0; margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        footer a { color: var(--accent); text-decoration: none; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 8px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); font-size: 13px; }
+        .footer-links a:hover { color: var(--text-primary); }
+
+        @media (max-width: 992px) { .anime-grid { grid-template-columns: repeat(4, 1fr); } .loading-skeleton-search { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 768px) {
+            .search-box-wrapper { flex-direction: column; max-width: 100%; }
+            .search-box-wrapper button { justify-content: center; }
+            .anime-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .loading-skeleton-search { grid-template-columns: repeat(3, 1fr); }
+            .list-header h2 { font-size: 18px; }
+            .filter-tabs a { padding: 6px 14px; font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .anime-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .loading-skeleton-search { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 22px; }
+            .filter-tabs a { padding: 4px 12px; font-size: 11px; }
+            .filter-tabs a i { font-size: 11px; }
+            .search-box-wrapper input { font-size: 14px; padding: 10px 14px 10px 38px; }
+            .search-box-wrapper button { font-size: 14px; padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><i class="fas fa-meteor"></i> Eclipes<span>Verse</span></a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mylist.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>🔍 <span>Cari Anime</span></h1>
+                <p>Temukan anime favoritmu dengan cepat</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container" style="padding:0 0 40px;">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+            <span class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Kembali</span>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <span class="separator">/</span>
+            <span style="color:var(--text-secondary);">Pencarian</span>
+        </div>
+
+        <!-- ===== FILTER TABS ===== -->
+        <div class="filter-tabs">
+            <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+            <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+            <a href="populer.html"><i class="fas fa-fire"></i> Populer</a>
+            <a href="trending.html"><i class="fas fa-chart-line"></i> Trending</a>
+            <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+            <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+        </div>
+
+        <div class="search-box-wrapper">
+            <i class="fas fa-search search-icon-input"></i>
+            <input type="text" id="searchQuery" placeholder="Cari anime, genre, atau studio..." value="" />
+            <button onclick="doSearch()"><i class="fas fa-search"></i> Cari</button>
+        </div>
+
+        <div class="search-filters" id="searchFilters">
+            <button class="active" data-filter="all" onclick="setFilter('all')">Semua</button>
+            <button data-filter="tv" onclick="setFilter('tv')">TV</button>
+            <button data-filter="movie" onclick="setFilter('movie')">Movie</button>
+            <button data-filter="ova" onclick="setFilter('ova')">OVA</button>
+            <button data-filter="ongoing" onclick="setFilter('ongoing')">Ongoing</button>
+            <button data-filter="completed" onclick="setFilter('completed')">Completed</button>
+        </div>
+
+        <div class="list-header">
+            <h2 id="searchTitle"><i class="fas fa-search"></i> Hasil Pencarian</h2>
+            <span class="filter-info" id="resultCount">Memuat...</span>
+        </div>
+
+        <div id="contentArea">
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <p>Ketik kata kunci untuk mencari anime</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-list.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mylist.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = urlParams.get('q') || '';
+
+        const searchQuery = document.getElementById('searchQuery');
+        const searchTitle = document.getElementById('searchTitle');
+        const resultCount = document.getElementById('resultCount');
+        const contentArea = document.getElementById('contentArea');
+
+        let currentFilter = 'all';
+        let allResults = [];
+        let currentQuery = '';
+
+        if (initialQuery) {
+            searchQuery.value = initialQuery;
+            doSearch();
+        }
+
+        async function doSearch() {
+            const q = searchQuery.value.trim();
+            currentQuery = q;
+
+            if (!q) {
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>Ketik kata kunci untuk mencari anime</p>
+                    </div>
+                `;
+                resultCount.textContent = '0 hasil';
+                searchTitle.innerHTML = `<i class="fas fa-search"></i> Hasil Pencarian`;
+                return;
+            }
+
+            contentArea.innerHTML = `
+                <div class="loading-skeleton-search">
+                    ${Array(10).fill('<div class="skeleton-search-card"></div>').join('')}
+                </div>
+            `;
+            resultCount.textContent = 'Mencari...';
+            searchTitle.innerHTML = `<i class="fas fa-search"></i> Hasil untuk "<span style="color:var(--accent);font-weight:700;">${q}</span>"`;
+
+            try {
+                let results = [];
+                try {
+                    const searchData = await fetchAnimekompi('search', { q: q });
+                    if (searchData && Array.isArray(searchData)) {
+                        results = searchData;
+                    } else if (searchData && searchData.animes) {
+                        results = searchData.animes;
+                    }
+                } catch (searchError) {
+                    console.warn('⚠️ Search API error, fallback ke list:', searchError);
+                    const listData = await fetchAnimekompi('list', { page: 1 });
+                    let allAnimes = [];
+                    if (Array.isArray(listData)) {
+                        listData.forEach(group => {
+                            if (group.animes) allAnimes = [...allAnimes, ...group.animes];
+                        });
+                    }
+                    results = allAnimes.filter(item =>
+                        (item.title || '').toLowerCase().includes(q.toLowerCase())
+                    );
+                }
+
+                allResults = results;
+                const filtered = applyFilter(results, currentFilter);
+                renderResults(filtered, q);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Gagal mencari</p>
+                        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">${error.message}</p>
+                        <button onclick="doSearch()" style="margin-top:12px;padding:10px 28px;background:var(--accent);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:600;">
+                            <i class="fas fa-sync"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
+                resultCount.textContent = 'Gagal';
+            }
+        }
+
+        function applyFilter(data, filter) {
+            if (filter === 'all') return data;
+            return data.filter(item => {
+                const type = (item.type || '').toLowerCase();
+                const status = (item.status || item.status_or_episode || '').toLowerCase();
+                if (filter === 'tv') return type.includes('tv') || type === 'tv';
+                if (filter === 'movie') return type.includes('movie');
+                if (filter === 'ova') return type.includes('ova') || type.includes('special');
+                if (filter === 'ongoing') return status.includes('ongoing') && !status.includes('completed');
+                if (filter === 'completed') return status.includes('completed') || status.includes('tamat');
+                return true;
+            });
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('#searchFilters button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            if (allResults.length > 0 || currentQuery) {
+                const filtered = applyFilter(allResults, filter);
+                renderResults(filtered, currentQuery);
+            }
+        }
+
+        function renderResults(results, query) {
+            if (!results || results.length === 0) {
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Tidak ada hasil untuk "<strong>${query}</strong>"</p>
+                        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Coba kata kunci lain</p>
+                    </div>
+                `;
+                resultCount.textContent = '0 hasil';
+                return;
+            }
+
+            const container = document.createElement('div');
+            renderAnimeGrid(container, results.slice(0, 20), '');
+            contentArea.innerHTML = container.innerHTML;
+
+            const total = results.length;
+            const shown = Math.min(total, 20);
+            resultCount.textContent = total > 20 ? `Menampilkan ${shown} dari ${total} hasil` : `${total} hasil ditemukan`;
+        }
+
+        searchQuery.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doSearch();
+        });
+
+        window.doSearch = doSearch;
+        window.setFilter = setFilter;
+    </script>
+
+</body>
+</html>
