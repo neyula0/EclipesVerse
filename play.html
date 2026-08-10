@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Putar Episode - EclipesVerse</title>
+    <meta name="description" content="Tonton episode anime subtitle Indonesia dengan kualitas HD." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▶️</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== EXTRA STYLE KHUSUS PLAY ===== */
+        .play-container { padding: 12px 0 40px; }
+
+        .play-hero {
+            padding: 12px 0 8px;
+            text-align: center;
+        }
+        .play-hero h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .play-hero h1 span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .play-hero p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin: 2px 0 0;
+        }
+
+        .video-wrapper {
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16/9;
+            border: 1px solid var(--border-color);
+        }
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .video-wrapper .loading-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0f;
+            color: var(--text-muted);
+            gap: 16px;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+        .video-wrapper .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .video-wrapper .loading-overlay .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .video-wrapper .loading-overlay .loading-text {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .video-wrapper .loading-overlay .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .video-wrapper .loading-overlay .loading-progress .bar {
+            height: 100%;
+            background: var(--accent-gradient);
+            width: 0%;
+            animation: progressAnim 3s ease-in-out infinite;
+        }
+        @keyframes progressAnim {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 95%; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+        .video-controls .episode-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .video-controls .episode-info .anime-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .video-controls .episode-info .anime-name a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .video-controls .episode-info .anime-name a:hover {
+            text-decoration: underline;
+        }
+        .video-controls .episode-info .episode-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .video-controls .episode-info .episode-title small {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .video-controls .nav-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .video-controls .nav-buttons button {
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        .video-controls .nav-buttons button:hover:not(:disabled) {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .video-controls .nav-buttons button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .server-section {
+            margin-top: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+        }
+        .server-section .server-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .server-section .server-label i { color: var(--accent); }
+        .server-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .server-list button {
+            padding: 6px 18px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .server-list button:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        .server-list button.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+        }
+        .server-list button i { margin-right: 6px; }
+
+        .download-section {
+            margin-top: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+        }
+        .download-section .download-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .download-section .download-label i { color: var(--accent); }
+        .download-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .download-list a {
+            padding: 6px 18px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-decoration: none;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .download-list a:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .download-list a i { font-size: 14px; }
+
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .error-state i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        .error-state h3 {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .error-state button {
+            margin-top: 12px;
+            padding: 10px 28px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+        .error-state button:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .shortcuts-hint {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .shortcuts-hint kbd {
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateX(-4px);
+        }
+
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding: 20px 0;
+            margin-top: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .video-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding: 10px 14px;
+            }
+            .video-controls .episode-info {
+                text-align: center;
+            }
+            .video-controls .nav-buttons {
+                justify-content: center;
+            }
+            .video-controls .nav-buttons button {
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+            .server-section { padding: 12px 14px; }
+            .download-section { padding: 12px 14px; }
+            .server-list button { padding: 4px 14px; font-size: 12px; }
+            .download-list a { padding: 4px 14px; font-size: 12px; }
+            .play-hero h1 { font-size: 18px; }
+            .shortcuts-hint { font-size: 11px; gap: 10px; }
+        }
+        @media (max-width: 480px) {
+            .video-wrapper { aspect-ratio: 16/9; }
+            .video-controls .episode-info .anime-name { font-size: 12px; }
+            .video-controls .episode-info .episode-title { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-meteor"></i> Eclipes<span>Verse</span>
+            </a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-daftaranime.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mydaftaranime.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== PLAY HERO ===== -->
+    <section class="play-hero">
+        <div class="container">
+            <h1>🎬 <span>Putar Episode</span></h1>
+            <p>Nonton anime subtitle Indonesia dengan kualitas terbaik</p>
+        </div>
+    </section>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="container play-container">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+            <a href="#" class="back-btn" id="backButton"><i class="fas fa-arrow-left"></i> Kembali</a>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="back-btn" onclick="toggleFullscreen()" style="border-color:rgba(56,189,248,0.3);">
+                    <i class="fas fa-expand"></i> Fullscreen
+                </button>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <span class="separator">/</span>
+            <a href="#" id="animeLink">Anime</a>
+            <span class="separator">/</span>
+            <span id="episodeBreadcrumb">Memuat...</span>
+        </div>
+
+        <div id="playContent">
+            <div class="video-wrapper" id="videoWrapper">
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div class="loading-text" id="loadingText">Memuat video...</div>
+                    <div class="loading-progress">
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <iframe id="videoFrame" src="" allowfullscreen></iframe>
+            </div>
+
+            <div class="video-controls" id="videoControls">
+                <div class="episode-info">
+                    <div class="anime-name" id="animeName">
+                        <a href="#" id="animeNameLink">Memuat...</a>
+                    </div>
+                    <div class="episode-title" id="episodeTitle">
+                        Memuat...
+                        <small id="episodeSubtitle"></small>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button id="prevBtn" disabled>
+                        <i class="fas fa-chevron-left"></i> Prev
+                    </button>
+                    <button id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="server-section" id="serverSection" style="display:none;">
+                <div class="server-label"><i class="fas fa-server"></i> Pilih Server</div>
+                <div class="server-list" id="serverList"></div>
+            </div>
+
+            <div class="download-section" id="downloadSection" style="display:none;">
+                <div class="download-label"><i class="fas fa-download"></i> Download</div>
+                <div class="download-list" id="downloadList"></div>
+            </div>
+
+            <div class="shortcuts-hint">
+                <span><kbd>Space</kbd> Play/Pause</span>
+                <span><kbd>←</kbd> <kbd>→</kbd> Navigasi Episode</span>
+                <span><kbd>F</kbd> Fullscreen</span>
+                <span><kbd>Esc</kbd> Keluar Fullscreen</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-daftaranime.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mydaftaranime.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ============================================
+        // PLAY PAGE - PREMIUM LOGIC
+        // ============================================
+
+        console.log('🚀 PLAY PAGE STARTED');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const episodeId = urlParams.get('episode_id') || urlParams.get('id') || '';
+        const animePath = urlParams.get('anime') || '';
+
+        console.log('📡 Episode ID:', episodeId);
+        console.log('📡 Anime Path:', animePath);
+
+        // DOM Elements
+        const videoFrame = document.getElementById('videoFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        const episodeTitle = document.getElementById('episodeTitle');
+        const episodeSubtitle = document.getElementById('episodeSubtitle');
+        const episodeBreadcrumb = document.getElementById('episodeBreadcrumb');
+        const animeLink = document.getElementById('animeLink');
+        const animeName = document.getElementById('animeName');
+        const animeNameLink = document.getElementById('animeNameLink');
+        const serverSection = document.getElementById('serverSection');
+        const serverList = document.getElementById('serverList');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadList = document.getElementById('downloadList');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const backButton = document.getElementById('backButton');
+
+        let currentData = null;
+        let currentServerIndex = 0;
+        let isFullscreen = false;
+
+        // ===== CHECK EPISODE ID =====
+        if (!episodeId) {
+            document.getElementById('playContent').innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>ID episode tidak ditemukan</h3>
+                    <p>Gunakan parameter <code>?episode_id=nama-episode</code></p>
+                    <button onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Kembali</button>
+                </div>
+            `;
+        }
+
+        // ===== FETCH PLAY DATA =====
+        async function fetchPlayData() {
+            loadingOverlay.classList.remove('hidden');
+            loadingText.textContent = 'Memuat video...';
+            videoFrame.src = '';
+
+            try {
+                const data = await fetchAnimekompi('play', { episode_id: episodeId });
+                console.log('📊 Play data:', data);
+
+                if (!data) {
+                    throw new Error('Data tidak ditemukan');
+                }
+
+                currentData = data;
+                renderPlayData(data);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showError(error.message);
+            }
+        }
+
+        // ===== RENDER PLAY DATA =====
+        function renderPlayData(data) {
+            const title = data.title || 'Episode';
+            const episode = data.episode || '';
+            const animeTitle = data.anime_title || 'Anime';
+            const servers = data.servers || [];
+            const downloads = data.downloads || [];
+            const navigation = data.navigation || {};
+
+            // Episode Info
+            episodeTitle.textContent = title;
+            if (episode) {
+                episodeSubtitle.textContent = `Episode ${episode}`;
+            }
+
+            episodeBreadcrumb.textContent = title;
+
+            // Anime Info
+            if (animePath) {
+                animeLink.href = `detail.html?path=${encodeURIComponent(animePath)}`;
+                animeLink.textContent = 'Detail Anime';
+                animeNameLink.href = `detail.html?path=${encodeURIComponent(animePath)}`;
+                animeNameLink.textContent = animeTitle;
+                backButton.href = `detail.html?path=${encodeURIComponent(animePath)}`;
+            } else {
+                animeLink.href = '#';
+                animeLink.textContent = 'Anime';
+                animeNameLink.href = '#';
+                animeNameLink.textContent = animeTitle;
+                backButton.href = 'javascript:window.history.back()';
+            }
+
+            // Navigation
+            if (navigation.prev_path) {
+                prevBtn.disabled = false;
+                prevBtn.onclick = () => {
+                    window.location.href = `play.html?episode_id=${encodeURIComponent(navigation.prev_path)}&anime=${encodeURIComponent(animePath)}`;
+                };
+            } else {
+                prevBtn.disabled = true;
+                prevBtn.onclick = null;
+            }
+
+            if (navigation.next_path) {
+                nextBtn.disabled = false;
+                nextBtn.onclick = () => {
+                    window.location.href = `play.html?episode_id=${encodeURIComponent(navigation.next_path)}&anime=${encodeURIComponent(animePath)}`;
+                };
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.onclick = null;
+            }
+
+            // Servers
+            if (servers.length > 0) {
+                serverSection.style.display = 'block';
+                serverList.innerHTML = servers.map((server, index) => `
+                    <button class="${index === 0 ? 'active' : ''}" onclick="switchServer(${index})">
+                        <i class="fas fa-play-circle"></i> ${server.name || `Server ${index + 1}`}
+                    </button>
+                `).join('');
+
+                currentServerIndex = 0;
+                loadVideo(servers[0].url);
+            } else {
+                serverSection.style.display = 'none';
+                setTimeout(() => {
+                    showError('Tidak ada server yang tersedia');
+                }, 500);
+            }
+
+            // Downloads
+            if (downloads.length > 0) {
+                downloadSection.style.display = 'block';
+                downloadList.innerHTML = downloads.map(d => `
+                    <a href="${d.url}" target="_blank" rel="noopener">
+                        <i class="fas fa-file-download"></i> ${d.provider || 'Download'}
+                    </a>
+                `).join('');
+            } else {
+                downloadSection.style.display = 'none';
+            }
+        }
+
+        // ===== LOAD VIDEO =====
+        function loadVideo(url) {
+            if (!url) {
+                showError('URL video tidak tersedia');
+                return;
+            }
+
+            loadingOverlay.classList.remove('hidden');
+            loadingText.textContent = 'Memuat video...';
+            videoFrame.src = '';
+
+            setTimeout(() => {
+                videoFrame.src = url;
+                videoFrame.onload = () => {
+                    loadingOverlay.classList.add('hidden');
+                    loadingText.textContent = 'Video siap diputar';
+                };
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden');
+                }, 4000);
+            }, 300);
+        }
+
+        // ===== SWITCH SERVER =====
+        function switchServer(index) {
+            if (!currentData || !currentData.servers) return;
+            if (index === currentServerIndex) return;
+
+            const servers = currentData.servers;
+            if (index >= servers.length) return;
+
+            currentServerIndex = index;
+
+            const buttons = serverList.querySelectorAll('button');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            loadVideo(servers[index].url);
+            showToast(`Beralih ke ${servers[index].name || 'Server ' + (index + 1)}`, 'fa-server', 2000);
+        }
+
+        // ===== SHOW ERROR =====
+        function showError(message) {
+            loadingOverlay.classList.add('hidden');
+            videoFrame.src = '';
+
+            const wrapper = document.getElementById('videoWrapper');
+            wrapper.innerHTML = `
+                <div class="error-state" style="padding:60px 20px;background:#0a0a0f;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <i class="fas fa-exclamation-circle" style="font-size:48px;color:var(--text-muted);"></i>
+                    <h3 style="color:var(--text-secondary);margin-top:12px;">${message}</h3>
+                    <button onclick="location.reload()" style="margin-top:12px;padding:10px 28px;background:var(--accent);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:600;">
+                        <i class="fas fa-sync"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+        }
+
+        // ===== TOGGLE FULLSCREEN =====
+        function toggleFullscreen() {
+            const wrapper = document.getElementById('videoWrapper');
+            if (!document.fullscreenElement) {
+                wrapper.requestFullscreen().catch(err => {
+                    showToast('Fullscreen tidak didukung', 'fa-exclamation-circle', 2000);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Space - Play/Pause (trigger iframe)
+            if (e.key === ' ' || e.key === 'Space') {
+                e.preventDefault();
+                const iframe = document.getElementById('videoFrame');
+                if (iframe) {
+                    // Try to send play/pause to iframe
+                    try {
+                        iframe.contentWindow.postMessage('play', '*');
+                    } catch (err) {
+                        // Fallback: click on iframe
+                        iframe.click();
+                    }
+                }
+                return;
+            }
+
+            // Arrow Left - Prev Episode
+            if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                e.preventDefault();
+                prevBtn.click();
+            }
+
+            // Arrow Right - Next Episode
+            if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                e.preventDefault();
+                nextBtn.click();
+            }
+
+            // F - Fullscreen
+            if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+
+            // Escape - Exit Fullscreen
+            if (e.key === 'Escape') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // ===== FULLSCREEN CHANGE =====
+        document.addEventListener('fullscreenchange', () => {
+            isFullscreen = !!document.fullscreenElement;
+        });
+
+        // ===== INIT =====
+        if (episodeId) {
+            fetchPlayData();
+        }
+
+        console.log('🚀 EclipesVerse Play page loaded');
+        console.log(`📡 Episode ID: ${episodeId}`);
+
+        // ===== EXPOSE GLOBAL =====
+        window.fetchPlayData = fetchPlayData;
+        window.switchServer = switchServer;
+        window.toggleFullscreen = toggleFullscreen;
+    </script>
+
+</body>
+</html>
