@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Anime - EclipesVerse</title>
+    <meta name="description" content="Detail anime subtitle Indonesia. Informasi lengkap, episode, dan rekomendasi." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== EXTRA STYLE KHUSUS DETAIL ===== */
+        .detail-container { padding: 0 0 40px; }
+
+        .detail-content {
+            display: flex;
+            gap: 30px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+        .detail-poster { width: 220px; flex-shrink: 0; position: relative; }
+        .detail-poster img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+        .detail-poster .poster-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .detail-poster .poster-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .detail-poster .poster-actions button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .detail-poster .poster-actions .btn-favorite.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .detail-poster .poster-actions .btn-favorite.active:hover {
+            background: var(--accent-dark);
+        }
+
+        .detail-info { flex: 1; }
+        .detail-info h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        .detail-info .title-sub {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .detail-info .meta-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 8px 0 12px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            align-items: center;
+        }
+        .detail-info .meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .detail-info .meta-row i { color: var(--accent); }
+        .detail-info .meta-row .badge {
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .detail-info .meta-row .badge.completed {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        .detail-info .meta-row .badge.ongoing {
+            background: rgba(250, 204, 21, 0.15);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+        .detail-info .meta-row .badge.jadwal {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .detail-info .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--warning);
+            font-size: 18px;
+            margin: 6px 0;
+        }
+        .detail-info .rating span {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .detail-info .rating .view-count {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
+        .detail-info .description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin: 12px 0;
+            font-size: 15px;
+        }
+        .detail-info .description .read-more {
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .detail-info .description .read-more:hover {
+            text-decoration: underline;
+        }
+
+        .detail-info .genres {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 8px 0 12px;
+        }
+        .detail-info .genres .genre-tag {
+            padding: 4px 16px;
+            background: rgba(124, 58, 237, 0.08);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--accent-light);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .detail-info .genres .genre-tag:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .detail-info .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 4px 20px;
+            margin-top: 10px;
+            font-size: 13px;
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .detail-info .detail-grid .item {
+            display: flex;
+            gap: 6px;
+            padding: 2px 0;
+        }
+        .detail-info .detail-grid .item .label {
+            color: var(--text-muted);
+            min-width: 60px;
+            font-weight: 500;
+        }
+        .detail-info .detail-grid .item .value {
+            color: var(--text-primary);
+        }
+
+        .detail-info .updated-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .episode-section { margin-top: 30px; }
+        .episode-section .episode-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .episode-section .episode-header h3 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .episode-section .episode-header h3 i { color: var(--accent); }
+        .episode-section .episode-header .ep-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .episode-section .episode-header .ep-controls button {
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all var(--transition);
+        }
+        .episode-section .episode-header .ep-controls button:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        .episode-section .episode-header .ep-controls button.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .episode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+            gap: 8px;
+            padding: 4px 0;
+        }
+        .episode-card {
+            background: var(--bg-card);
+            padding: 10px 4px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 44px;
+            position: relative;
+        }
+        .episode-card:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--text-primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+        .episode-card .ep-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 400;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+            z-index: 10;
+            box-shadow: var(--shadow-sm);
+        }
+        .episode-card:hover .ep-tooltip { display: block; }
+        .episode-card.watched {
+            border-color: var(--success);
+            background: rgba(74, 222, 128, 0.05);
+        }
+        .episode-card.watched::after {
+            content: '✓';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--success);
+            color: #fff;
+            font-size: 8px;
+            padding: 1px 4px;
+            border-radius: 50%;
+        }
+
+        .recommendations { margin-top: 30px; }
+        .recommendations h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .recommendations h3 i { color: var(--accent); }
+        .recommend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        .recommend-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        .recommend-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-hover);
+        }
+        .recommend-card img {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+        }
+        .recommend-card .recommend-title {
+            padding: 8px 12px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 40px;
+        }
+        .recommend-card .recommend-rating {
+            text-align: center;
+            font-size: 12px;
+            color: var(--warning);
+            padding-bottom: 8px;
+        }
+
+        .share-section {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .share-section .share-btn {
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .share-section .share-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .share-section .share-btn i { font-size: 13px; }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+        }
+        .loading-state .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--bg-card);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .no-data {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 16px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateX(-4px);
+        }
+
+        @media (max-width: 768px) {
+            .detail-content {
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            }
+            .detail-poster { width: 180px; }
+            .detail-poster .poster-actions { justify-content: center; }
+            .detail-info h1 { font-size: 22px; text-align: center; }
+            .detail-info .title-sub { text-align: center; }
+            .detail-info .meta-row { justify-content: center; font-size: 13px; gap: 10px; }
+            .detail-info .rating { justify-content: center; }
+            .detail-info .description { font-size: 14px; text-align: center; }
+            .detail-info .genres { justify-content: center; }
+            .detail-info .detail-grid { grid-template-columns: 1fr 1fr; }
+            .episode-grid { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+            .episode-card { padding: 8px 2px; font-size: 12px; min-width: 36px; }
+            .recommend-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .share-section { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .detail-poster { width: 140px; }
+            .detail-info h1 { font-size: 18px; }
+            .detail-info .meta-row { font-size: 12px; gap: 8px; flex-wrap: wrap; }
+            .detail-info .detail-grid { grid-template-columns: 1fr; }
+            .episode-grid { grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 5px; }
+            .episode-card { padding: 6px 2px; font-size: 11px; min-width: 32px; border-radius: 6px; }
+            .recommend-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .recommend-card .recommend-title { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-meteor"></i> Eclipes<span>Verse</span>
+            </a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-daftaranime.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mydaftaranime.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" style="padding:20px 0 8px;">
+        <div class="container">
+            <div class="hero-content">
+                <h1 style="font-size:28px;">Detail <span>Anime</span></h1>
+                <p style="font-size:14px;margin:4px 0 0;">Informasi lengkap, episode, dan rekomendasi</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="container detail-container">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+            <span class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Kembali</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="back-btn" onclick="shareAnime()" style="border-color:rgba(56,189,248,0.3);">
+                    <i class="fas fa-share-alt"></i> Bagikan
+                </button>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <span class="separator">/</span>
+            <a href="daftaranime.html">Anime</a>
+            <span class="separator">/</span>
+            <span id="breadcrumbTitle" style="color:var(--text-secondary);">Loading...</span>
+        </div>
+
+        <div id="detailContent" class="detail-content">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p style="margin-top:12px;">Memuat detail anime...</p>
+            </div>
+        </div>
+
+        <div class="episode-section" id="episodeSection">
+            <div class="episode-header">
+                <h3><i class="fas fa-list"></i> Daftar Episode</h3>
+                <div class="ep-controls">
+                    <button id="epSortBtn" onclick="toggleEpisodeSort()">
+                        <i class="fas fa-sort"></i> Terbaru
+                    </button>
+                    <span id="episodeCount" style="color:var(--text-muted);font-size:13px;">Memuat...</span>
+                </div>
+            </div>
+            <div id="episodeGrid" class="episode-grid">
+                <div class="loading-state" style="grid-column:1/-1;padding:20px 0;">
+                    <div class="spinner" style="width:28px;height:28px;"></div>
+                    <p style="margin-top:8px;font-size:13px;">Memuat episode...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendations">
+            <h3><i class="fas fa-thumbs-up"></i> Rekomendasi</h3>
+            <div id="recommendGrid" class="recommend-grid">
+                <div class="loading-state" style="grid-column:1/-1;padding:20px 0;">
+                    <div class="spinner" style="width:28px;height:28px;"></div>
+                    <p style="margin-top:8px;font-size:13px;">Memuat rekomendasi...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-daftaranime.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mydaftaranime.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ============================================
+        // DETAIL - PREMIUM LOGIC
+        // ============================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const animePath = urlParams.get('path') || urlParams.get('id') || '';
+
+        console.log('📡 Anime Path:', animePath);
+
+        let currentData = null;
+        let episodeSortAsc = false;
+
+        const detailContent = document.getElementById('detailContent');
+        const episodeGrid = document.getElementById('episodeGrid');
+        const episodeCount = document.getElementById('episodeCount');
+        const recommendGrid = document.getElementById('recommendGrid');
+        const breadcrumbTitle = document.getElementById('breadcrumbTitle');
+
+        // ===== FETCH DETAIL =====
+        async function fetchDetail() {
+            if (!animePath) {
+                detailContent.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;padding:60px 0;text-align:center;color:var(--text-muted);">
+                        <i class="fas fa-exclamation-circle" style="font-size:48px;margin-bottom:12px;"></i>
+                        <h3>Path anime tidak ditemukan</h3>
+                        <p>Parameter path tidak valid</p>
+                    </div>
+                `;
+                breadcrumbTitle.textContent = 'Error';
+                return;
+            }
+
+            try {
+                const data = await fetchAnimekompi('detail', { path: animePath });
+                console.log('📊 Detail data:', data);
+
+                if (!data) throw new Error('Data tidak ditemukan');
+
+                currentData = data;
+                renderDetail(data);
+                renderEpisodes(data);
+                renderRecommendations(data);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                detailContent.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;padding:60px 0;text-align:center;color:var(--text-muted);">
+                        <i class="fas fa-exclamation-circle" style="font-size:48px;margin-bottom:12px;"></i>
+                        <h3>Gagal memuat detail</h3>
+                        <p>${error.message}</p>
+                        <button onclick="fetchDetail()" style="margin-top:12px;padding:10px 28px;background:var(--accent);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:600;">
+                            <i class="fas fa-sync"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
+                episodeGrid.innerHTML = `<div class="no-data">Gagal memuat episode</div>`;
+                recommendGrid.innerHTML = `<div class="no-data">Gagal memuat rekomendasi</div>`;
+            }
+        }
+
+        // ===== RENDER DETAIL =====
+        function renderDetail(data) {
+            const title = data.title || 'Unknown';
+            const titleEn = data.title_en || '';
+            const cover = data.cover_url || getPlaceholder(title);
+            const rating = parseFloat(data.rating) || 0;
+            const views = data.view || 0;
+            const status = data.status || 'Unknown';
+            const type = data.type || 'Unknown';
+            const season = data.season || 'N/A';
+            const duration = data.duration || 'N/A';
+            const studio = data.studio || 'N/A';
+            const releaseDate = data.release_date || 'N/A';
+            const genres = data.genres || [];
+            const synopsis = data.synopsis || 'Tidak ada sinopsis.';
+            const totalEpisodes = data.total_episodes || 0;
+            const updatedAt = data.updated_at || data.last_update || '';
+
+            breadcrumbTitle.textContent = title;
+
+            const statusClass = status.toLowerCase() === 'completed' ? 'completed' : 
+                              status.toLowerCase().includes('ongoing') ? 'ongoing' : 'jadwal';
+            const starsHtml = getStarsHtml(rating);
+            const isInList = window.isInMyList ? isInMyList(animePath) : false;
+
+            let html = `
+                <div class="detail-poster">
+                    <img src="${cover}" alt="${title}" onerror="this.src='${getPlaceholder(title)}'" />
+                    <div class="poster-actions">
+                        <button class="btn-favorite ${isInList ? 'active' : ''}" onclick="toggleFavorite()">
+                            <i class="fas ${isInList ? 'fa-check' : 'fa-plus'}"></i>
+                            ${isInList ? 'Di Daftar' : 'Tambah ke Daftar'}
+                        </button>
+                        <button onclick="window.location.href='#episodeSection'">
+                            <i class="fas fa-play"></i> Nonton
+                        </button>
+                    </div>
+                </div>
+                <div class="detail-info">
+                    <h1>${title}</h1>
+                    ${titleEn ? `<div class="title-sub">${titleEn}</div>` : ''}
+                    <div class="meta-row">
+                        <span class="badge ${statusClass}"><i class="fas ${statusClass === 'completed' ? 'fa-check-circle' : 'fa-clock'}"></i> ${status}</span>
+                        <span><i class="fas fa-layer-group"></i> ${type}</span>
+                        ${season !== 'N/A' ? `<span><i class="fas fa-calendar-alt"></i> ${season}</span>` : ''}
+                        ${totalEpisodes > 0 ? `<span><i class="fas fa-list"></i> ${totalEpisodes} Episode</span>` : ''}
+                    </div>
+                    <div class="rating">
+                        ${starsHtml}
+                        <span>${rating.toFixed(1)}</span>
+                        ${views ? `<span class="view-count">• ${views.toLocaleString()} views</span>` : ''}
+                    </div>
+                    ${genres.length > 0 ? `
+                    <div class="genres">
+                        ${genres.map(g => `<span class="genre-tag" onclick="window.location.href='genre-detail.html?id=${encodeURIComponent(g.toLowerCase())}&name=${encodeURIComponent(g)}'">${g}</span>`).join('')}
+                    </div>
+                    ` : ''}
+                    <div class="description">
+                        ${synopsis.length > 300 ? synopsis.substring(0, 300) + '... <span class="read-more" onclick="this.parentElement.innerHTML = \'' + synopsis.replace(/'/g, "\\'") + '\'">Baca Selengkapnya</span>' : synopsis}
+                    </div>
+                    <div class="detail-grid">
+                        <div class="item"><span class="label">Studio:</span><span class="value">${studio}</span></div>
+                        <div class="item"><span class="label">Durasi:</span><span class="value">${duration}</span></div>
+                        <div class="item"><span class="label">Rilis:</span><span class="value">${releaseDate}</span></div>
+                        <div class="item"><span class="label">Total Ep:</span><span class="value">${totalEpisodes || 'N/A'}</span></div>
+                    </div>
+                    ${updatedAt ? `<div class="updated-info"><i class="fas fa-clock"></i> Update terakhir: ${new Date(updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>` : ''}
+                    <div class="share-section">
+                        <button class="share-btn" onclick="shareAnime()"><i class="fas fa-share-alt"></i> Bagikan</button>
+                        <button class="share-btn" onclick="copyLink()"><i class="fas fa-link"></i> Salin Link</button>
+                    </div>
+                </div>
+            `;
+
+            detailContent.innerHTML = html;
+        }
+
+        // ===== RENDER EPISODES =====
+        function renderEpisodes(data) {
+            const episodeList = data.episode_list || [];
+
+            if (episodeList.length === 0) {
+                episodeGrid.innerHTML = `<div class="no-data">Belum ada episode</div>`;
+                episodeCount.textContent = '0 episode';
+                return;
+            }
+
+            episodeCount.textContent = `${episodeList.length} episode`;
+
+            let sorted = [...episodeList];
+            if (episodeSortAsc) {
+                sorted.sort((a, b) => (a.episode_number || 0) - (b.episode_number || 0));
+            } else {
+                sorted.sort((a, b) => (b.episode_number || 0) - (a.episode_number || 0));
+            }
+
+            let html = '';
+            sorted.forEach((ep) => {
+                const epNum = ep.episode_number || '?';
+                const epId = ep.episode_id || ep.path || '';
+                const title = ep.title || `Episode ${epNum}`;
+
+                html += `
+                    <div class="episode-card" onclick="window.location.href='play.html?episode_id=${encodeURIComponent(epId)}&anime=${encodeURIComponent(animePath)}'" title="${title}">
+                        ${epNum}
+                        <span class="ep-tooltip">${title}</span>
+                    </div>
+                `;
+            });
+
+            episodeGrid.innerHTML = html;
+        }
+
+        // ===== RENDER RECOMMENDATIONS =====
+        function renderRecommendations(data) {
+            const recommendations = data.recommendations || [];
+
+            if (recommendations.length === 0) {
+                recommendGrid.innerHTML = `<div class="no-data">Tidak ada rekomendasi</div>`;
+                return;
+            }
+
+            let html = '';
+            recommendations.forEach(rec => {
+                const title = rec.title || 'Unknown';
+                const cover = rec.cover_url || getPlaceholder(title);
+                const path = rec.path || rec.id || title;
+                const rating = parseFloat(rec.rating) || 0;
+
+                html += `
+                    <div class="recommend-card" onclick="window.location.href='detail.html?path=${encodeURIComponent(path)}'">
+                        <img src="${cover}" alt="${title}" loading="lazy" 
+                             onerror="this.src='${getPlaceholder(title)}'" />
+                        <div class="recommend-title">${title}</div>
+                        ${rating > 0 ? `<div class="recommend-rating">${'★'.repeat(Math.round(rating/2))}${'☆'.repeat(5-Math.round(rating/2))}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            recommendGrid.innerHTML = html;
+        }
+
+        // ===== TOGGLE FAVORITE =====
+        function toggleFavorite() {
+            if (!currentData) return;
+            const anime = {
+                title: currentData.title,
+                path: animePath,
+                cover_url: currentData.cover_url,
+                status: currentData.status,
+                type: currentData.type
+            };
+            const result = window.toggleMyList ? toggleMyList(anime) : false;
+            renderDetail(currentData);
+        }
+
+        // ===== TOGGLE EPISODE SORT =====
+        function toggleEpisodeSort() {
+            episodeSortAsc = !episodeSortAsc;
+            document.getElementById('epSortBtn').innerHTML = `<i class="fas fa-sort"></i> ${episodeSortAsc ? 'Terlama' : 'Terbaru'}`;
+            if (currentData) renderEpisodes(currentData);
+        }
+
+        // ===== SHARE =====
+        function shareAnime() {
+            const title = currentData?.title || 'Anime';
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: `EclipesVerse - ${title}`, url: url });
+            } else {
+                copyLink();
+            }
+        }
+
+        function copyLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link berhasil disalin!', 'fa-link', 2000);
+            }).catch(() => {
+                // Fallback
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Link berhasil disalin!', 'fa-link', 2000);
+            });
+        }
+
+        // ===== INIT =====
+        fetchDetail();
+
+        console.log('🚀 EclipesVerse Detail page loaded');
+        console.log(`📡 Anime Path: ${animePath}`);
+
+        // ===== EXPOSE GLOBAL =====
+        window.fetchDetail = fetchDetail;
+        window.toggleFavorite = toggleFavorite;
+        window.toggleEpisodeSort = toggleEpisodeSort;
+        window.shareAnime = shareAnime;
+        window.copyLink = copyLink;
+    </script>
+
+</body>
+</html>
