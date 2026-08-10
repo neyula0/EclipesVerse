@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jadwal Rilis - EclipesVerse</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        .hero { padding: 20px 0 8px; text-align: center; }
+        .hero h1 { font-size: 28px; font-weight: 700; }
+        .hero h1 span { background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 12px 0; flex-wrap: wrap; }
+        .breadcrumb a { color: var(--accent); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb .separator { color: var(--border-color); }
+        .list-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+        .list-header h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .list-header h2 i { color: var(--accent); }
+        .list-header .filter-info { color: var(--text-muted); font-size: 14px; }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-tabs::-webkit-scrollbar { height: 2px; }
+        .filter-tabs::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        .filter-tabs a {
+            padding: 8px 20px;
+            border-radius: 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-tabs a:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        .filter-tabs a.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+        }
+        .filter-tabs a i { font-size: 13px; }
+
+        .schedule-list { display: flex; flex-direction: column; gap: 10px; }
+        .schedule-item { background: var(--bg-card); border-radius: var(--radius-md); padding: 12px 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 14px; transition: all var(--transition); cursor: pointer; }
+        .schedule-item:hover { border-color: var(--accent); transform: translateX(4px); box-shadow: var(--shadow-glow); }
+        .schedule-item .item-poster { width: 44px; height: 66px; flex-shrink: 0; border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-secondary); }
+        .schedule-item .item-poster img { width: 100%; height: 100%; object-fit: cover; }
+        .schedule-item .item-info { flex: 1; min-width: 0; }
+        .schedule-item .item-info .title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .schedule-item .item-info .meta { font-size: 12px; color: var(--text-secondary); display: flex; gap: 12px; flex-wrap: wrap; margin-top: 2px; }
+        .schedule-item .item-info .meta .episode { color: var(--accent); font-weight: 600; }
+        .schedule-item .item-time { text-align: right; flex-shrink: 0; }
+        .schedule-item .item-time .time { font-size: 14px; font-weight: 700; color: var(--accent-light); }
+        .schedule-item .item-time .status { font-size: 11px; color: var(--text-muted); }
+        .day-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+        .day-tabs button { padding: 8px 20px; border-radius: 25px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--transition); white-space: nowrap; position: relative; }
+        .day-tabs button:hover { border-color: var(--accent); color: var(--text-primary); transform: translateY(-2px); }
+        .day-tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
+        .day-tabs button .count { background: rgba(255,255,255,0.1); padding: 0 8px; border-radius: 12px; font-size: 11px; margin-left: 4px; }
+        .day-tabs button.active .count { background: rgba(255,255,255,0.2); }
+        .day-tabs button .today-badge { position: absolute; top: -6px; right: -6px; background: var(--success); color: #fff; font-size: 8px; padding: 1px 6px; border-radius: 10px; font-weight: 700; }
+
+        .back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; font-size: 13px; text-decoration: none; transition: all var(--transition); }
+        .back-btn:hover { border-color: var(--accent); color: var(--text-primary); transform: translateX(-4px); }
+        .loading-skeleton { display: flex; flex-direction: column; gap: 10px; }
+        .skeleton-item { background: var(--bg-card); border-radius: var(--radius-md); height: 70px; animation: shimmer 1.8s ease-in-out infinite; border: 1px solid var(--border-color); }
+        .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-muted); }
+        .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+        footer { border-top: 1px solid var(--border-color); padding: 20px 0; margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        footer a { color: var(--accent); text-decoration: none; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 8px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); font-size: 13px; }
+        .footer-links a:hover { color: var(--text-primary); }
+
+        @media (max-width: 768px) {
+            .schedule-item { flex-wrap: wrap; padding: 12px; }
+            .schedule-item .item-time { text-align: left; width: 100%; padding-left: 58px; }
+            .day-tabs button { padding: 6px 14px; font-size: 12px; }
+            .list-header h2 { font-size: 18px; }
+            .filter-tabs a { padding: 6px 14px; font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .schedule-item .item-poster { width: 36px; height: 54px; }
+            .schedule-item .item-info .title { font-size: 13px; }
+            .schedule-item .item-time .time { font-size: 13px; }
+            .day-tabs button { padding: 4px 10px; font-size: 11px; }
+            .filter-tabs a { padding: 4px 12px; font-size: 11px; }
+            .filter-tabs a i { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><i class="fas fa-meteor"></i> Eclipes<span>Verse</span></a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html" class="active"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mylist.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>📅 <span>Jadwal Rilis</span></h1>
+                <p>Pantau jadwal rilis anime terbaru setiap harinya</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container" style="padding:0 0 40px;">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+            <span class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Kembali</span>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <span class="separator">/</span>
+            <span style="color:var(--text-secondary);">Jadwal Rilis</span>
+        </div>
+
+        <!-- ===== FILTER TABS ===== -->
+        <div class="filter-tabs">
+            <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+            <a href="daftaranime.html"><i class="fas fa-list"></i> Daftar Anime</a>
+            <a href="populer.html"><i class="fas fa-fire"></i> Populer</a>
+            <a href="trending.html"><i class="fas fa-chart-line"></i> Trending</a>
+            <a href="schedule.html" class="active"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+            <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+        </div>
+
+        <div class="list-header">
+            <h2><i class="fas fa-calendar-alt"></i> Jadwal Rilis</h2>
+            <span class="filter-info" id="todayInfo">Memuat...</span>
+        </div>
+
+        <div class="day-tabs" id="dayTabs">
+            <div class="loading-skeleton" style="display:flex;flex-direction:row;gap:8px;width:100%;">
+                <div class="skeleton-item" style="height:40px;width:80px;border-radius:20px;"></div>
+                <div class="skeleton-item" style="height:40px;width:80px;border-radius:20px;"></div>
+                <div class="skeleton-item" style="height:40px;width:80px;border-radius:20px;"></div>
+                <div class="skeleton-item" style="height:40px;width:80px;border-radius:20px;"></div>
+                <div class="skeleton-item" style="height:40px;width:80px;border-radius:20px;"></div>
+            </div>
+        </div>
+
+        <div id="scheduleContent">
+            <div class="loading-skeleton">
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-list.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mylist.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        let scheduleData = [];
+        let currentDay = '';
+        const dayTabs = document.getElementById('dayTabs');
+        const scheduleContent = document.getElementById('scheduleContent');
+        const todayInfo = document.getElementById('todayInfo');
+        const dayOrder = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+        function getToday() {
+            return new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+        }
+
+        function formatTime(time) {
+            if (!time) return '';
+            const clean = time.replace('Jam ', '').trim();
+            if (clean.includes(':')) return clean;
+            if (clean.includes('WIB')) return clean;
+            return clean;
+        }
+
+        function renderDayTabs(data, activeDay) {
+            const today = getToday();
+            let html = '';
+            data.forEach(day => {
+                const isActive = day.day === activeDay;
+                const isToday = day.day === today;
+                const count = day.animes?.length || 0;
+                html += `
+                    <button class="${isActive ? 'active' : ''}" onclick="switchDay('${day.day}')">
+                        ${day.day}
+                        ${isToday ? '<span class="today-badge">HARI INI</span>' : ''}
+                        <span class="count">${count}</span>
+                    </button>
+                `;
+            });
+            dayTabs.innerHTML = html;
+        }
+
+        function renderSchedule(dayData) {
+            if (!dayData || !dayData.animes || dayData.animes.length === 0) {
+                scheduleContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Belum ada jadwal rilis untuk hari ${dayData?.day || 'ini'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="schedule-list">';
+            dayData.animes.forEach(item => {
+                const img = item.cover_url || getPlaceholder(item.title || 'Anime', '100x150');
+                const title = item.title || 'Unknown';
+                const path = item.path || item.id || title;
+                const episode = item.episode || '';
+                const status = item.status || '';
+                const type = item.type || '';
+                const time = formatTime(status);
+
+                html += `
+                    <div class="schedule-item" onclick="window.location.href='detail.html?path=${encodeURIComponent(path)}'">
+                        <div class="item-poster">
+                            <img src="${img}" alt="${title}" loading="lazy" 
+                                 onerror="this.src='${getPlaceholder(title, '100x150')}'" />
+                        </div>
+                        <div class="item-info">
+                            <div class="title">${title}</div>
+                            <div class="meta">
+                                ${episode ? `<span class="episode"><i class="fas fa-play-circle"></i> Episode ${episode}</span>` : ''}
+                                ${type ? `<span class="type-tag">${type}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="item-time">
+                            ${time ? `<div class="time"><i class="fas fa-clock"></i> ${time}</div>` : ''}
+                            <div class="status"><i class="fas fa-calendar-check"></i> Rilis hari ini</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            scheduleContent.innerHTML = html;
+        }
+
+        function switchDay(day) {
+            currentDay = day;
+            const dayData = scheduleData.find(d => d.day === day);
+            renderDayTabs(scheduleData, day);
+            renderSchedule(dayData);
+            const count = dayData?.animes?.length || 0;
+            todayInfo.textContent = `${day} • ${count} anime rilis`;
+        }
+
+        async function fetchSchedule() {
+            scheduleContent.innerHTML = `
+                <div class="loading-skeleton">${Array(7).fill('<div class="skeleton-item"></div>').join('')}</div>
+            `;
+            dayTabs.innerHTML = `
+                <div class="loading-skeleton" style="display:flex;flex-direction:row;gap:8px;width:100%;">
+                    ${Array(5).fill('<div class="skeleton-item" style="height:40px;width:80px;border-radius:20px;"></div>').join('')}
+                </div>
+            `;
+            todayInfo.textContent = 'Memuat...';
+
+            try {
+                const data = await fetchAnimekompi('schedule');
+
+                if (Array.isArray(data) && data.length > 0) {
+                    scheduleData = data.sort((a, b) => {
+                        return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
+                    });
+
+                    const today = getToday();
+                    const todayData = scheduleData.find(d => d.day === today);
+                    currentDay = todayData ? today : (scheduleData[0]?.day || '');
+
+                    const dayData = scheduleData.find(d => d.day === currentDay);
+                    renderDayTabs(scheduleData, currentDay);
+                    renderSchedule(dayData);
+
+                    const count = dayData?.animes?.length || 0;
+                    todayInfo.textContent = `${currentDay} • ${count} anime rilis`;
+
+                } else {
+                    scheduleContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Tidak ada data jadwal</p>
+                            <button onclick="fetchSchedule()" style="margin-top:12px;padding:10px 28px;background:var(--accent);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:600;">
+                                <i class="fas fa-sync"></i> Coba Lagi
+                            </button>
+                        </div>
+                    `;
+                    todayInfo.textContent = 'Tidak ada data';
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                scheduleContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Gagal memuat jadwal</p>
+                        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">${error.message}</p>
+                        <button onclick="fetchSchedule()" style="margin-top:12px;padding:10px 28px;background:var(--accent);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:600;">
+                            <i class="fas fa-sync"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
+                todayInfo.textContent = 'Gagal memuat';
+            }
+        }
+
+        fetchSchedule();
+
+        window.switchDay = switchDay;
+        window.fetchSchedule = fetchSchedule;
+    </script>
+
+</body>
+</html>
