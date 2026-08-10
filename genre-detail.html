@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Genre - EclipesVerse</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏷️</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        .genre-container { padding: 0 0 40px; }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 16px 0 8px;
+            flex-wrap: wrap;
+        }
+        .breadcrumb a { color: var(--accent); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: var(--text-secondary); }
+
+        .genre-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .genre-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .genre-header h1 i { color: var(--accent); }
+        .genre-header .genre-info {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .anime-card {
+            background: #1a1730;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid #2a2740;
+            transition: 0.3s;
+        }
+        .anime-card:hover {
+            transform: translateY(-5px);
+            border-color: #7c3aed;
+            box-shadow: 0 8px 40px rgba(124,58,237,0.2);
+        }
+        .anime-card .card-img {
+            position: relative;
+            aspect-ratio: 2/3;
+            overflow: hidden;
+            background: #12101f;
+        }
+        .anime-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .anime-card .card-img .ep-badge {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .anime-card .card-img .genre-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(124, 58, 237, 0.92);
+            color: #fff;
+        }
+        .anime-card .card-body {
+            padding: 10px 12px 12px;
+        }
+        .anime-card .card-body .title {
+            font-size: 13px;
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+            min-height: 36px;
+        }
+        .anime-card .card-body .meta {
+            font-size: 11px;
+            color: #a0a0b8;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .anime-card .card-body .meta .type {
+            background: #12101f;
+            padding: 0 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #6a6a8a;
+        }
+        .anime-card .card-body .rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 4px 0 0;
+        }
+        .anime-card .card-body .rating .stars {
+            color: #facc15;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        .anime-card .card-body .rating .score {
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .anime-card .card-body .rating .score-high { color: #4ade80; }
+        .anime-card .card-body .rating .score-mid { color: #facc15; }
+        .anime-card .card-body .rating .score-low { color: #fb923c; }
+        .anime-card .card-body .rating .score-bad { color: #ef4444; }
+
+        .loading-skeleton {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .skeleton-card {
+            background: #1a1730;
+            border-radius: 12px;
+            aspect-ratio: 2/3;
+            animation: skeletonPulse 1.5s ease-in-out infinite;
+            border: 1px solid #2a2740;
+        }
+        @keyframes skeletonPulse {
+            0%,100% { opacity:0.4; }
+            50% { opacity:0.8; }
+        }
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 0;
+            color: #6a6a8a;
+        }
+        .empty-state i { font-size:48px; margin-bottom:12px; }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 24px 0 30px;
+            flex-wrap: wrap;
+        }
+        .pagination button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #1a1730;
+            border: 1px solid #2a2740;
+            color: #a0a0b8;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 40px;
+            transition: 0.3s;
+        }
+        .pagination button:hover:not(:disabled):not(.active) {
+            background: #7c3aed;
+            color: #fff;
+            border-color: #7c3aed;
+        }
+        .pagination button.active {
+            background: #7c3aed;
+            color: #fff;
+            border-color: #7c3aed;
+        }
+        .pagination button:disabled { opacity:0.3; cursor:not-allowed; }
+        .pagination .page-numbers { display:flex; gap:6px; flex-wrap:wrap; }
+        .pagination .page-info { color:#6a6a8a; font-size:14px; padding:0 12px; }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 6px;
+            background: #1a1730;
+            border: 1px solid #2a2740;
+            color: #a0a0b8;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .back-btn:hover { border-color:#7c3aed; color:#fff; }
+
+        footer {
+            border-top: 1px solid #2a2740;
+            padding: 20px 0;
+            margin-top: 30px;
+            text-align: center;
+            color: #6a6a8a;
+            font-size: 13px;
+        }
+        footer a { color:#7c3aed; text-decoration:none; }
+
+        @media (max-width:992px) {
+            .anime-grid { grid-template-columns: repeat(4, 1fr); }
+            .loading-skeleton { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width:768px) {
+            .navbar .nav-menu {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                padding: 10px 0;
+            }
+            .navbar .nav-menu.open { display: flex; }
+            .menu-toggle { display: block; }
+            .navbar .search-bar input { width: 120px; }
+            .anime-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .loading-skeleton { grid-template-columns: repeat(3, 1fr); }
+            .genre-header h1 { font-size: 20px; }
+            .pagination button { padding: 6px 12px; font-size: 13px; min-width: 36px; }
+        }
+        @media (max-width:480px) {
+            .anime-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .loading-skeleton { grid-template-columns: repeat(2, 1fr); }
+            .anime-card .card-body .title { font-size: 12px; }
+            .pagination button { padding: 4px 10px; font-size: 12px; min-width: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo"><i class="fas fa-meteor"></i> Eclipes<span>Verse</span></div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html">Home</a>
+                <a href="index.html#ongoing">Ongoing</a>
+                <a href="index.html#completed">Completed</a>
+                <a href="genre-daftaranime.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="daftaranime.html">A-Z</a>
+                <a href="mydaftaranime.html">Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-search"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Streaming Anime <span>Subtitle Indonesia</span></h1>
+            <p>Gratis • Tanpa Iklan • Update Tercepat • HD Quality</p>
+            <div class="stats">
+                <div class="stat"><div class="number">12,000+</div><div class="label">Anime</div></div>
+                <div class="stat"><div class="number">Update Setiap Hari</div><div class="label">Tercepat</div></div>
+                <div class="stat"><div class="number">500K+</div><div class="label">Pengguna</div></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container genre-container">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+            <span class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Kembali</span>
+            <a href="daftaranime.html?type=genre" class="back-btn" style="text-decoration:none;">
+                <i class="fas fa-list"></i> Lihat di List
+            </a>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <span>/</span>
+            <a href="daftaranime.html?type=genre">Genre</a>
+            <span>/</span>
+            <span id="breadcrumbTitle" style="color:var(--text-secondary);">Loading...</span>
+        </div>
+
+        <div class="genre-header">
+            <h1 id="genreTitle"><i class="fas fa-tag"></i> Loading...</h1>
+            <span class="genre-info" id="genreCount">Memuat...</span>
+        </div>
+
+        <div id="contentArea">
+            <div class="loading-skeleton">
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+            </div>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <button id="prevPage" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+            <span class="page-info" id="pageInfo"></span>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari <a href="#">Animekompi API</a></p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ============================================
+        // GENRE DETAIL PAGE
+        // ============================================
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const genreId = urlParams.get('id') || '';
+        const genreName = urlParams.get('name') || genreId || 'Genre';
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let totalItems = 0;
+        const ITEMS_PER_PAGE = 20;
+
+        const contentArea = document.getElementById('contentArea');
+        const genreTitle = document.getElementById('genreTitle');
+        const genreCount = document.getElementById('genreCount');
+        const breadcrumbTitle = document.getElementById('breadcrumbTitle');
+        const pageNumbers = document.getElementById('pageNumbers');
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+
+        genreTitle.innerHTML = `<i class="fas fa-tag"></i> ${genreName}`;
+        breadcrumbTitle.textContent = genreName;
+
+        async function fetchGenreDetail(page = 1) {
+            if (!genreId) {
+                contentArea.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Genre tidak ditemukan</p></div>`;
+                genreCount.textContent = '0 anime';
+                return;
+            }
+
+            contentArea.innerHTML = `
+                <div class="loading-skeleton">
+                    ${Array(20).fill('<div class="skeleton-card"></div>').join('')}
+                </div>
+            `;
+            genreCount.textContent = 'Memuat...';
+
+            try {
+                const data = await fetchAnimekompi('genre-detail', { genre: genreId, page: page });
+                console.log('📊 Genre detail:', data);
+
+                const animeList = data?.animes || [];
+                const total = data?.total_items || animeList.length;
+
+                totalItems = total;
+                totalPages = Math.ceil(total / ITEMS_PER_PAGE) || 1;
+                currentPage = page;
+
+                renderContent(animeList);
+                updatePagination();
+
+                const start = (page - 1) * ITEMS_PER_PAGE + 1;
+                const end = Math.min(page * ITEMS_PER_PAGE, total);
+                genreCount.textContent = `Menampilkan ${start}-${end} dari ${total} anime`;
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>❌ Gagal memuat genre "${genreName}"</p>
+                        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">${error.message}</p>
+                        <button onclick="fetchGenreDetail(1)" style="margin-top:10px;padding:8px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;">
+                            <i class="fas fa-sync"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
+                genreCount.textContent = 'Gagal memuat';
+            }
+        }
+
+        function renderContent(items) {
+            if (!items || items.length === 0) {
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Tidak ada anime untuk genre ini</p>
+                    </div>
+                `;
+                genreCount.textContent = '0 anime';
+                return;
+            }
+
+            let html = '<div class="anime-grid">';
+
+            items.forEach(item => {
+                const img = item.cover_url || 'https://via.placeholder.com/300x450/1a1730/555?text=No+Image';
+                const title = item.title || 'Unknown';
+                const path = item.path || item.id || title;
+                const episode = item.episode || item.status_or_episode || '';
+                const rating = item.rating || 0;
+                const type = item.type || '';
+
+                html += `
+                    <div class="anime-card" onclick="window.location.href='detail.html?path=${encodeURIComponent(path)}'">
+                        <div class="card-img">
+                            <img src="${img}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450/1a1730/555?text=Error'" />
+                            ${episode ? `<span class="ep-badge">${episode}</span>` : ''}
+                            <span class="genre-badge">${genreName}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="title">${title}</div>
+                            ${rating ? `<div class="rating"><span class="stars">${getStarsHtml(rating)}</span> <span class="score ${getRatingColor(rating)}">${parseFloat(rating).toFixed(1)}</span></div>` : ''}
+                            <div class="meta">
+                                ${type ? `<span class="type">${type}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            contentArea.innerHTML = html;
+        }
+
+        function updatePagination() {
+            if (totalPages <= 1) {
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('pagination').style.display = 'flex';
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+            const end = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+            pageInfo.textContent = `${start}-${end} dari ${totalItems}`;
+
+            let html = '';
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            if (endPage - startPage < maxVisible - 1) {
+                if (startPage === 1) {
+                    endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                } else if (endPage === totalPages) {
+                    startPage = Math.max(1, endPage - maxVisible + 1);
+                }
+            }
+
+            if (startPage > 1) {
+                html += `<button onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) html += `<button disabled>...</button>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === currentPage;
+                html += `<button class="${isActive ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<button disabled>...</button>`;
+                html += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            pageNumbers.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            if (page === currentPage) return;
+            if (page < 1 || page > totalPages) return;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            fetchGenreDetail(page);
+        }
+
+        prevBtn?.addEventListener('click', () => {
+            if (currentPage > 1) goToPage(currentPage - 1);
+        });
+
+        nextBtn?.addEventListener('click', () => {
+            if (currentPage < totalPages) goToPage(currentPage + 1);
+        });
+
+        fetchGenreDetail(1);
+
+        console.log('🚀 EclipesVerse Genre Detail running');
+        console.log(`📡 Genre: ${genreId} - ${genreName}`);
+
+        window.fetchGenreDetail = fetchGenreDetail;
+        window.goToPage = goToPage;
+    </script>
+
+</body>
+</html>
