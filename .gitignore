@@ -1,0 +1,16 @@
+# Environment Variables
+.env
+
+# Node Modules
+node_modules/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Backup
+*.tar.gz
+backup_*
