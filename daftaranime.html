@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Anime - EclipesVerse</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        .hero { padding: 20px 0 8px; text-align: center; }
+        .hero h1 { font-size: 28px; font-weight: 700; }
+        .hero h1 span { background: linear-gradient(135deg, #7c3aed, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 12px 0; flex-wrap: wrap; }
+        .breadcrumb a { color: var(--accent); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb .separator { color: var(--border-color); }
+        .list-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+        .list-header h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .list-header h2 i { color: var(--accent); }
+        .list-header .filter-info { color: var(--text-muted); font-size: 14px; }
+
+        /* ===== FILTER TABS ===== */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-tabs::-webkit-scrollbar { height: 2px; }
+        .filter-tabs::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        .filter-tabs a {
+            padding: 8px 20px;
+            border-radius: 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-tabs a:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        .filter-tabs a.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+        }
+        .filter-tabs a i { font-size: 13px; }
+
+        .anime-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+        .back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; font-size: 13px; text-decoration: none; transition: all var(--transition); }
+        .back-btn:hover { border-color: var(--accent); color: var(--text-primary); transform: translateX(-4px); }
+        .loading-skeleton { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+        .skeleton-card { background: var(--bg-card); border-radius: var(--radius-md); aspect-ratio: 2/3; animation: shimmer 1.8s ease-in-out infinite; border: 1px solid var(--border-color); }
+        @keyframes shimmer { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-muted); }
+        .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 24px 0 30px; flex-wrap: wrap; }
+        .pagination button { padding: 8px 16px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); font-weight: 600; font-size: 14px; cursor: pointer; min-width: 40px; transition: all var(--transition); }
+        .pagination button:hover:not(:disabled):not(.active) { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .pagination button.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
+        .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pagination .page-numbers { display: flex; gap: 6px; flex-wrap: wrap; }
+        .pagination .page-info { color: var(--text-muted); font-size: 14px; padding: 0 12px; }
+
+        footer { border-top: 1px solid var(--border-color); padding: 20px 0; margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        footer a { color: var(--accent); text-decoration: none; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 8px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); font-size: 13px; }
+        .footer-links a:hover { color: var(--text-primary); }
+
+        @media (max-width: 992px) { .anime-grid { grid-template-columns: repeat(4, 1fr); } .loading-skeleton { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 768px) {
+            .anime-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .loading-skeleton { grid-template-columns: repeat(3, 1fr); }
+            .list-header h2 { font-size: 18px; }
+            .filter-tabs a { padding: 6px 14px; font-size: 12px; }
+            .pagination button { padding: 6px 12px; font-size: 13px; min-width: 36px; }
+        }
+        @media (max-width: 480px) {
+            .anime-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .loading-skeleton { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 22px; }
+            .filter-tabs a { padding: 4px 12px; font-size: 11px; }
+            .filter-tabs a i { font-size: 11px; }
+            .pagination button { padding: 4px 10px; font-size: 12px; min-width: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><i class="fas fa-meteor"></i> Eclipes<span>Verse</span></a>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+                <a href="daftaranime.html" class="active"><i class="fas fa-list"></i> Daftar Anime</a>
+                <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+                <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+                <a href="mylist.html"><i class="fas fa-bookmark"></i> Daftar Saya</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" placeholder="Cari anime..." />
+                    <button onclick="searchAnime()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>📋 <span id="pageTitle">Daftar Anime</span></h1>
+                <p id="pageSubtitle">Temukan anime favoritmu dari ribuan judul</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container" style="padding:0 0 40px;">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+            <span class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Kembali</span>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <span class="separator">/</span>
+            <span id="breadcrumbText" style="color:var(--text-secondary);">Daftar Anime</span>
+        </div>
+
+        <!-- ===== FILTER TABS ===== -->
+        <div class="filter-tabs" id="filterTabs">
+            <a href="ongoing.html"><i class="fas fa-clock"></i> Ongoing</a>
+            <a href="daftaranime.html" class="active"><i class="fas fa-list"></i> Daftar Anime</a>
+            <a href="populer.html"><i class="fas fa-fire"></i> Populer</a>
+            <a href="trending.html"><i class="fas fa-chart-line"></i> Trending</a>
+            <a href="schedule.html"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+            <a href="genre-list.html"><i class="fas fa-tags"></i> Genre</a>
+        </div>
+
+        <div class="list-header">
+            <h2><i class="fas fa-list"></i> <span id="listTitle">Semua Anime</span></h2>
+            <span class="filter-info" id="totalCount">Memuat...</span>
+        </div>
+
+        <div id="contentArea">
+            <div class="loading-skeleton">
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+            </div>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <button id="prevPage" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+            <span class="page-info" id="pageInfo"></span>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="daftaranime.html">Daftar Anime</a>
+                <a href="ongoing.html">Ongoing</a>
+                <a href="genre-list.html">Genre</a>
+                <a href="schedule.html">Jadwal</a>
+                <a href="mylist.html">Daftar Saya</a>
+            </div>
+            <p>&copy; 2026 EclipesVerse — Dibuat dengan ❤️ | Data dari Animekompi API</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ============================================
+        // DAFTAR ANIME - TANPA ALPHABET NAV
+        // ============================================
+
+        let currentPage = 1, totalPages = 1, totalItems = 0, allData = [];
+        const ITEMS_PER_PAGE = 20;
+
+        // ===== BACA PARAMETER URL =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterType = urlParams.get('type'); // 'completed'
+
+        const contentArea = document.getElementById('contentArea');
+        const totalCount = document.getElementById('totalCount');
+        const pageNumbers = document.getElementById('pageNumbers');
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        const breadcrumbText = document.getElementById('breadcrumbText');
+        const listTitle = document.getElementById('listTitle');
+
+        // ===== SET TITLE =====
+        if (filterType === 'completed') {
+            pageTitle.textContent = '✅ Completed';
+            pageSubtitle.textContent = 'Anime yang sudah tamat dan selesai ditayangkan';
+            breadcrumbText.textContent = 'Completed';
+            listTitle.textContent = '✅ Completed';
+        } else {
+            pageTitle.textContent = '📋 Daftar Anime';
+            pageSubtitle.textContent = 'Temukan anime favoritmu dari ribuan judul';
+            breadcrumbText.textContent = 'Daftar Anime';
+            listTitle.textContent = '📋 Semua Anime';
+        }
+
+        // ===== FETCH ANIME LIST =====
+        async function fetchAnimeList(page = 1) {
+            contentArea.innerHTML = `<div class="loading-skeleton">${Array(20).fill('<div class="skeleton-card"></div>').join('')}</div>`;
+            totalCount.textContent = 'Memuat...';
+
+            try {
+                const listData = await fetchAnimekompi('list', { page: 1 });
+                let allAnimes = [];
+                if (Array.isArray(listData)) {
+                    listData.forEach(group => {
+                        if (group.animes) allAnimes = [...allAnimes, ...group.animes];
+                    });
+                }
+
+                // ===== FILTER COMPLETED =====
+                if (filterType === 'completed') {
+                    allAnimes = allAnimes.filter(item => {
+                        const status = (item.status || item.status_or_episode || '').toLowerCase();
+                        return status.includes('completed') || status.includes('tamat');
+                    });
+                }
+
+                allData = allAnimes;
+                totalItems = allData.length;
+                totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+                currentPage = page;
+
+                const start = (page - 1) * ITEMS_PER_PAGE;
+                const end = Math.min(start + ITEMS_PER_PAGE, totalItems);
+                const pageItems = allData.slice(start, end);
+
+                // ===== RENDER =====
+                renderContent(pageItems);
+                updatePagination();
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Gagal memuat data</p>
+                        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">${error.message}</p>
+                        <button onclick="fetchAnimeList(1)" style="margin-top:12px;padding:10px 28px;background:var(--accent);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:600;">
+                            <i class="fas fa-sync"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
+                totalCount.textContent = 'Gagal memuat';
+            }
+        }
+
+        // ===== RENDER CONTENT =====
+        function renderContent(items) {
+            if (!items || !items.length) {
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Tidak ada anime</p>
+                    </div>
+                `;
+                totalCount.textContent = '0 anime';
+                return;
+            }
+
+            const container = document.createElement('div');
+            renderAnimeGrid(container, items, 'az');
+            contentArea.innerHTML = container.innerHTML;
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+            const end = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+            totalCount.textContent = `Menampilkan ${start}-${end} dari ${totalItems} anime`;
+        }
+
+        // ===== PAGINATION =====
+        function updatePagination() {
+            if (totalPages <= 1) {
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('pagination').style.display = 'flex';
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+            const end = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+            pageInfo.textContent = `${start}-${end} dari ${totalItems}`;
+
+            let html = '';
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            if (endPage - startPage < maxVisible - 1) {
+                if (startPage === 1) endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                else if (endPage === totalPages) startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            if (startPage > 1) {
+                html += `<button onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) html += `<button disabled>...</button>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === currentPage;
+                html += `<button class="${isActive ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<button disabled>...</button>`;
+                html += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            pageNumbers.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            if (page === currentPage) return;
+            if (page < 1 || page > totalPages) return;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            fetchAnimeList(page);
+        }
+
+        prevBtn?.addEventListener('click', () => {
+            if (currentPage > 1) goToPage(currentPage - 1);
+        });
+
+        nextBtn?.addEventListener('click', () => {
+            if (currentPage < totalPages) goToPage(currentPage + 1);
+        });
+
+        // ===== INIT =====
+        fetchAnimeList(1);
+
+        console.log('🚀 EclipesVerse Daftar Anime loaded');
+        console.log(`📡 Filter: ${filterType || 'Semua'}`);
+
+        window.fetchAnimeList = fetchAnimeList;
+        window.goToPage = goToPage;
+    </script>
+
+</body>
+</html>
